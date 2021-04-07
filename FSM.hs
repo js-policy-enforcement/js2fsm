@@ -11,31 +11,10 @@ import Text.Printf
 import qualified Data.Map as Map
 import Clang
 
-{-
-type FSM = [FBoolExpr] [FTrans]
-
-data FTrans = String [(FBoolExpr, FState)]
-         deriving Show
-
-data FBoolExpr = FEqu FIntExpr FIntExpr
-               | FLT FIntExpr FIntExpr
-               | FAnd FBoolExpr FBoolExpr
-               | FOr FBoolExpr FBoolExpr
-               | FNot FBoolExpr
-               | FTrue
-         deriving Show
-
-data FIntExpr = FVar String
-              | FNum Integer
-              | FAdd FIntExpr FIntExpr
-              | FSub FIntExpr FIntExpr
-         deriving Show
--}
-
 data FTrans = FTrans String FState
 
 instance Show FTrans where
-  show (FTrans name fstate) = "Transition "++name++"\n"++(fstate2string fstate)
+  show (FTrans name fstate) = "Transition "++name++"\n"++(fstate2string fstate)++"\n"
 
 type FState = Map.Map String CExpr
 
@@ -45,6 +24,8 @@ fstate2string fstate =
       lstrings = m <$> Map.toList fstate
    in intercalate "\n" lstrings
 
+-- Convert an intermediate JavaScript program into a
+-- transition system
 convert :: CProg -> Maybe [FTrans]
 convert (CProg s0 decls) = combine1 (mapDecl <$> decls)
   where s0' = Map.mapWithKey (\k a -> CVar k) s0
